@@ -1,0 +1,48 @@
+Step3: Initialize git
+git init
+
+Step4: stage and commit files
+git add .
+git commit -m "Initial commit"
+
+Step5: rename branch to main (Optional)
+
+check branch:
+git branch
+
+rename if needed:
+git branch -m main
+
+Step6: add github remote
+
+check if origin exists:
+git remote -v 
+
+if it exists and is wrong:
+git remote set-url origin https://github.com/farjanakhan2212/rainbow-coloring-book.git
+
+if not exists:
+git remote add origin https://github.com/farjanakhan2212/rainbow-coloring-book.git
+
+Step7: pull remote changes if needed
+
+if github has a README or other files:
+git pull origin main --allow-unrelated-histories
+
+resolve conflicts if any,then commit.
+
+Step8: push to github
+git push -u origin main
+-u set main as default for future pushes
+
+Step9: check your repository
+https://github.com/farjanakhan2212/rainbow-coloring-book.git
+
+Step10: Optional-add README.md 
+
+git add README.md 
+git commit -m "Add README"
+git push
+
+
+              --------------------------------

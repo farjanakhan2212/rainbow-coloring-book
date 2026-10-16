@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Rainbow Coloring Book - Rub, Color &amp; Have Fun!</title>
+  <meta name="description" content="A free online coloring book for kids. Just rub the brush over a picture and the color stays inside the lines! Animals, birds, bugs, fruits, vegetables, fun houses, vehicles, fishes and stories.">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="bg-shapes" aria-hidden="true">
+    <span class="s s1"></span><span class="s s2"></span><span class="s s3"></span><span class="s s4"></span><span class="s s5"></span>
+  </div>
+
+  <header class="site-header">
+    <a class="logo" href="#/" aria-label="Rainbow Coloring Book - home">
+      <span class="logo-mark" aria-hidden="true">&#127752;</span>
+      <span class="logo-text"><b style="--c:#ff4d6d">R</b><b style="--c:#ff8c1a">a</b><b style="--c:#f5b700">i</b><b style="--c:#3fae5a">n</b><b style="--c:#2ec4b6">b</b><b style="--c:#3a86ff">o</b><b style="--c:#8e5be8">w</b>
+        <small>Coloring Book</small></span>
+    </a>
+    <p class="header-note" id="countNote"></p>
+  </header>
+
+  <main>
+    <!-- ================= GALLERY ================= -->
+    <section id="gallery" class="gallery">
+      <div class="hero">
+        <div class="hero-text">
+          <h1>Rub the brush &amp; <span>watch it color!</span></h1>
+          <p>Pick a picture, choose a crayon and just <b>rub</b> over it &mdash; the color stays neatly inside the lines. Every picture has a <b>color guide</b>, and the stories come with the story lines to read.</p>
+          <div class="hero-pills">
+            <span style="--p:#ffd6a5">&#128396; Easy rub-to-color</span>
+            <span style="--p:#bde0fe">&#127912; Color guide</span>
+            <span style="--p:#e0c3fc">&#128214; Story time</span>
+            <span style="--p:#caffbf">&#11015; Save your art</span>
+          </div>
+        </div>
+        <img class="hero-img" src="hero.jpg" alt="Kids Coloring Book cover with happy children and animals" width="350" height="495">
+      </div>
+
+      <div class="toolbar">
+        <div class="chips" id="chips" role="tablist" aria-label="Picture categories"></div>
+        <label class="search"><span class="sr-only">Search pictures</span>
+          <input id="search" type="search" placeholder="Search pictures..." autocomplete="off">
+        </label>
+      </div>
+
+      <div class="grid" id="grid" aria-live="polite"></div>
+      <p class="empty" id="empty" hidden>No pictures found. Try another word!</p>
+    </section>
+
+    <!-- ================= PAINTER ================= -->
+    <section id="viewer" class="viewer" hidden>
+      <div class="viewer-top">
+        <a class="btn ghost" href="#/" id="backBtn">&larr; All pictures</a>
+        <div class="pager">
+          <button class="btn ghost" id="prevBtn" aria-label="Previous picture">&lsaquo; Prev</button>
+          <button class="btn ghost" id="nextBtn" aria-label="Next picture">Next &rsaquo;</button>
+        </div>
+      </div>
+
+      <div class="viewer-layout">
+        <div class="left">
+          <div class="drawbar">
+            <div class="seg" role="group" aria-label="Tool">
+              <button class="btn tool active" id="toolBrush" aria-pressed="true">&#128396; Brush</button>
+              <button class="btn tool" id="toolFill" aria-pressed="false">&#129699; Fill</button>
+              <button class="btn tool" id="toolErase" aria-pressed="false">&#129529; Eraser</button>
+            </div>
+            <label class="size">Size <input type="range" id="size" min="4" max="48" value="18" aria-label="Brush size"></label>
+            <label class="neat" title="When ON, the color stays inside the lines even if you rub outside">
+              <input type="checkbox" id="neat" checked> Stay inside the lines
+            </label>
+          </div>
+
+          <div class="paper" id="paper">
+            <div class="stage" id="stage">
+              <canvas id="paintCv"></canvas>
+              <canvas id="lineCv"></canvas>
+              <div class="loading" id="loading">Getting your picture ready&hellip;</div>
+            </div>
+          </div>
+
+          <div class="caption">
+            <span class="tag" id="vTag"></span>
+            <h2 id="vName"></h2>
+            <p class="fact" id="vFact"></p>
+            <div class="story" id="vStory" hidden>
+              <h3>&#128214; The Story</h3>
+              <ol id="vLines"></ol>
+              <p class="moral" id="vMoral"></p>
+            </div>
+          </div>
+        </div>
+
+        <aside class="panel" aria-label="Coloring tools">
+          <div class="box">
+            <h3>&#127912; Crayons</h3>
+            <div class="palette" id="palette"></div>
+            <div class="custom">
+              <label for="customColor">My color</label>
+              <input type="color" id="customColor" value="#ff6b6b">
+              <span class="current" id="currentSwatch" title="Selected color"></span>
+            </div>
+          </div>
+
+          <div class="box guide">
+            <div class="guide-head">
+              <h3>&#128161; Color Guide</h3>
+              <button class="link" id="guideToggle" aria-expanded="true">Hide</button>
+            </div>
+            <div class="guide-body">
+              <button class="ref" id="refBtn" aria-label="Color guide picture. Tap a spot to pick that color.">
+                <img id="refImg" alt="">
+              </button>
+              <p class="hint">Tap the picture to pick its color, or choose from the colors below.</p>
+              <div class="guide-colors" id="guideColors"></div>
+            </div>
+          </div>
+
+          <div class="box">
+            <h3>&#128295; Tools</h3>
+            <div class="tools">
+              <button class="btn" id="undoBtn">&#8630; Undo</button>
+              <button class="btn" id="clearBtn">&#128465; Start over</button>
+              <button class="btn magic" id="magicBtn">&#10024; Magic Colors</button>
+              <button class="btn download" id="saveBtn">&#11015; Save picture</button>
+            </div>
+          </div>
+        </aside>
+      </div>
+    </section>
+  </main>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <footer class="site-footer">
+    <p>Made for little artists &#128150; &mdash; your coloring is saved on this device automatically.</p>
+  </footer>
+
+  <script src="pictures.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
