@@ -3,8 +3,17 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Rainbow Coloring Book - Rub, Color &amp; Have Fun!</title>
+  <title>Rainbow Coloring Book - Color by Number</title>
   <meta name="description" content="A free online coloring book for kids. Just rub the brush over a picture and the color stays inside the lines! Animals, birds, bugs, fruits, vegetables, fun houses, vehicles, fishes and stories.">
+  <meta name="theme-color" content="#ff6b9d">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" type="image/svg+xml" href="icons/icon.svg">
+  <link rel="icon" type="image/png" sizes="48x48" href="icons/favicon-48.png">
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="Coloring Book">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -18,7 +27,10 @@
       <span class="logo-text"><b style="--c:#ff4d6d">R</b><b style="--c:#ff8c1a">a</b><b style="--c:#f5b700">i</b><b style="--c:#3fae5a">n</b><b style="--c:#2ec4b6">b</b><b style="--c:#3a86ff">o</b><b style="--c:#8e5be8">w</b>
         <small>Coloring Book</small></span>
     </a>
-    <p class="header-note" id="countNote"></p>
+    <div class="header-right">
+      <button class="btn install" id="installBtn" hidden>&#128241; Install app</button>
+      <p class="header-note" id="countNote"></p>
+    </div>
   </header>
 
   <main>
@@ -26,11 +38,11 @@
     <section id="gallery" class="gallery">
       <div class="hero">
         <div class="hero-text">
-          <h1>Rub the brush &amp; <span>watch it color!</span></h1>
-          <p>Pick a picture, choose a crayon and just <b>rub</b> over it &mdash; the color stays neatly inside the lines. Every picture has a <b>color guide</b>, and the stories come with the story lines to read.</p>
+          <h1>Color by number &amp; <span>just rub!</span></h1>
+          <p>Every shape has a number. Pick the matching number, then just <b>rub</b> over the shape &mdash; the color stays neatly inside the lines and only fits where its number is. Stories come with the story lines to read.</p>
           <div class="hero-pills">
-            <span style="--p:#ffd6a5">&#128396; Easy rub-to-color</span>
-            <span style="--p:#bde0fe">&#127912; Color guide</span>
+            <span style="--p:#ffd6a5">&#128396; Rub to color</span>
+            <span style="--p:#bde0fe">&#128290; Numbered colors</span>
             <span style="--p:#e0c3fc">&#128214; Story time</span>
             <span style="--p:#caffbf">&#11015; Save your art</span>
           </div>
@@ -68,8 +80,8 @@
               <button class="btn tool" id="toolErase" aria-pressed="false">&#129529; Eraser</button>
             </div>
             <label class="size">Size <input type="range" id="size" min="4" max="48" value="18" aria-label="Brush size"></label>
-            <label class="neat" title="When ON, the color stays inside the lines even if you rub outside">
-              <input type="checkbox" id="neat" checked> Stay inside the lines
+            <label class="neat" title="Show or hide the little numbers inside each shape">
+              <input type="checkbox" id="showNums" checked> Show numbers
             </label>
           </div>
 
@@ -77,8 +89,14 @@
             <div class="stage" id="stage">
               <canvas id="paintCv"></canvas>
               <canvas id="lineCv"></canvas>
+              <canvas id="numCv"></canvas>
               <div class="loading" id="loading">Getting your picture ready&hellip;</div>
             </div>
+          </div>
+
+          <div class="statusbar">
+            <div class="progress" aria-hidden="true"><div class="bar" id="bar"></div></div>
+            <span class="pct" id="pct">0%</span>
           </div>
 
           <div class="caption">
@@ -95,12 +113,19 @@
 
         <aside class="panel" aria-label="Coloring tools">
           <div class="box">
-            <h3>&#127912; Crayons</h3>
+            <h3>&#128396; Pick a number</h3>
             <div class="palette" id="palette"></div>
-            <div class="custom">
-              <label for="customColor">My color</label>
-              <input type="color" id="customColor" value="#ff6b6b">
-              <span class="current" id="currentSwatch" title="Selected color"></span>
+            <p class="hint">Pick a number, then <b>rub</b> over a shape with the <b>same number</b>. The color only fits where its number is!</p>
+          </div>
+
+          <div class="box">
+            <h3>&#128295; Tools</h3>
+            <div class="tools">
+              <button class="btn" id="hintBtn">&#128161; Hint</button>
+              <button class="btn" id="undoBtn">&#8630; Undo</button>
+              <button class="btn magic" id="magicBtn">&#10024; Show answer</button>
+              <button class="btn" id="clearBtn">&#128465; Start over</button>
+              <button class="btn download" id="saveBtn">&#11015; Save picture</button>
             </div>
           </div>
 
@@ -110,27 +135,23 @@
               <button class="link" id="guideToggle" aria-expanded="true">Hide</button>
             </div>
             <div class="guide-body">
-              <button class="ref" id="refBtn" aria-label="Color guide picture. Tap a spot to pick that color.">
-                <img id="refImg" alt="">
-              </button>
-              <p class="hint">Tap the picture to pick its color, or choose from the colors below.</p>
-              <div class="guide-colors" id="guideColors"></div>
-            </div>
-          </div>
-
-          <div class="box">
-            <h3>&#128295; Tools</h3>
-            <div class="tools">
-              <button class="btn" id="undoBtn">&#8630; Undo</button>
-              <button class="btn" id="clearBtn">&#128465; Start over</button>
-              <button class="btn magic" id="magicBtn">&#10024; Magic Colors</button>
-              <button class="btn download" id="saveBtn">&#11015; Save picture</button>
+              <div class="ref"><img id="refImg" alt="The finished picture, for color ideas"></div>
+              <ul id="guideList" class="guide-list"></ul>
             </div>
           </div>
         </aside>
       </div>
     </section>
   </main>
+
+  <div class="modal" id="installModal" role="dialog" aria-modal="true" aria-labelledby="installTitle" hidden>
+    <div class="modal-card">
+      <button class="modal-x" id="installClose" aria-label="Close">&times;</button>
+      <h2 id="installTitle">&#128241; Put the app on your screen</h2>
+      <p>Install <b>Rainbow Coloring Book</b> like a real app. It gets its own icon, opens full screen and works even without internet.</p>
+      <div class="steps" id="installSteps"></div>
+    </div>
+  </div>
 
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
 

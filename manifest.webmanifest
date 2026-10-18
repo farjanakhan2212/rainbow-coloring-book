@@ -1,0 +1,19 @@
+{
+  "name": "Rainbow Coloring Book",
+  "short_name": "Coloring Book",
+  "description": "A color-by-number coloring book for kids. Rub the brush over a shape and the color stays inside the lines.",
+  "id": "./",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#fff7e6",
+  "theme_color": "#ff6b9d",
+  "lang": "en",
+  "categories": ["kids", "education", "entertainment"],
+  "icons": [
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}
