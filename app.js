@@ -1083,33 +1083,44 @@
   const isStandalone = () => window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
   const isIos = () => /iphone|ipad|ipod/i.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
 
-  function installHelp() {
+  const isAndroid = () => /android/i.test(navigator.userAgent);
+  const inAppBrowser = () => /FBAN|FBAV|FB_IAB|Instagram|Messenger|Line\/|TikTok|Snapchat|; wv\)/i.test(navigator.userAgent);
+
+  async function installHelp() {
     const steps = $('#installSteps');
     const ios = '<h3>iPhone / iPad (Safari)</h3><ol><li>Tap the <b>Share</b> button (the square with an arrow).</li><li>Scroll down and tap <b>Add to Home Screen</b>.</li><li>Tap <b>Add</b>. The icon appears on your screen!</li></ol>';
-    const android = '<h3>Android (Chrome)</h3><ol><li>Tap the <b>&#8942; menu</b> at the top right.</li><li>Tap <b>Install app</b> (or <b>Add to Home screen</b>).</li><li>Tap <b>Install</b>. Open it from the new icon.</li></ol>';
-    const desktop = '<h3>Computer (Chrome or Edge)</h3><ol><li>Click the <b>install icon</b> at the right end of the address bar, or open the <b>&#8942; menu</b>.</li><li>Choose <b>Install Rainbow Coloring Book</b>.</li><li>Click <b>Install</b>. It opens in its own window and gets a shortcut.</li></ol>';
-    const note = location.protocol === 'file:' ? '<p class="you">Note: the app can only be installed when the website is opened from the internet (https), not from a file on your computer.</p>' : '';
-    steps.innerHTML = note + (isIos() ? ios + android + desktop : android + desktop + ios);
+    const android = '<h3>Android (Chrome)</h3><ol><li>Tap the <b>&#8942; menu</b> at the top right of Chrome.</li><li>Tap <b>Install app</b> (or <b>Add to Home screen</b>, then <b>Install</b>).</li><li>Open the app from the new rainbow icon.</li></ol>';
+    const desktop = '<h3>Computer (Chrome or Edge)</h3><ol><li>Click the <b>install icon</b> at the right end of the address bar, or open the <b>&#8942; menu</b>.</li><li>Choose <b>Install Rainbow Coloring Book</b>.</li><li>Click <b>Install</b>. It opens in its own window.</li></ol>';
+
+    // what could be stopping the install?
+    let swOk = false;
+    try { swOk = !!(navigator.serviceWorker && await navigator.serviceWorker.getRegistration()); } catch (err) { swOk = false; }
+    const problems = [];
+    if (location.protocol === 'file:') problems.push('You opened this from a <b>file</b>. An app can only be installed from a website link that starts with <b>https://</b> (for example your GitHub Pages link).');
+    else if (!window.isSecureContext) problems.push('This page is opened with <b>http://</b>. Please open the <b>https://</b> link instead (a plain http address or an IP address like 192.168.x.x cannot be installed).');
+    else if (!swOk) problems.push('The offline files are not ready yet. Wait a few seconds, refresh the page once, and try again.');
+    if (inAppBrowser()) problems.push('You are inside another app\u2019s browser (Facebook, Messenger, Instagram&hellip;). Tap its menu and choose <b>Open in Chrome</b> first.');
+    const warn = problems.length ? '<h3>&#9888;&#65039; Why the button may not work</h3><ul>' + problems.map(p => `<li>${p}</li>`).join('') + '</ul>' : '';
+    const tip = (!problems.length && isAndroid()) ? '<p class="you">Chrome decides when to offer the install. If the install window did not open, use <b>&#8942; menu &rarr; Install app</b>. If you only see <b>Add to Home screen</b>, tap that, then <b>Install</b>.</p>' : '';
+    const order = isIos() ? ios + android + desktop : (isAndroid() ? android + desktop + ios : desktop + android + ios);
+    steps.innerHTML = warn + tip + order;
     $('#installModal').hidden = false;
   }
 
   function setupInstall() {
     const btn = $('#installBtn');
     if (isStandalone()) return;
-    // iPhone/iPad never fire the install event, so show the "how to" button there
-    if (isIos()) btn.hidden = false;
+    btn.hidden = false;      // always visible: it installs when the browser allows it, otherwise it shows how
     window.addEventListener('beforeinstallprompt', e => {
       e.preventDefault();
       deferredInstall = e;
-      btn.hidden = false;
     });
     window.addEventListener('appinstalled', () => { deferredInstall = null; btn.hidden = true; toast('\uD83C\uDF89 Installed! Look for the rainbow icon.'); });
     btn.addEventListener('click', async () => {
       if (deferredInstall) {
-        deferredInstall.prompt();
-        try { await deferredInstall.userChoice; } catch (err) { /* ignore */ }
+        const ev = deferredInstall;
         deferredInstall = null;
-        btn.hidden = true;
+        try { ev.prompt(); await ev.userChoice; } catch (err) { installHelp(); }
       } else {
         installHelp();
       }
