@@ -249,6 +249,7 @@ main { flex: 1; padding: 0 clamp(14px, 4vw, 40px) 40px; width: 100%; max-width: 
   .panel .box:nth-child(3) { order: 7; }
   .caption { order: 6; }
 }
+<<<<<<< HEAD
 
 /* ================= install as an app ================= */
 .header-right { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; justify-content: flex-end; }
@@ -263,3 +264,5 @@ main { flex: 1; padding: 0 clamp(14px, 4vw, 40px) 40px; width: 100%; max-width: 
 .steps li { margin: 4px 0; }
 .steps .you { background: #fff3c4; border: 3px dashed var(--orange); border-radius: 14px; padding: 8px 12px; margin-bottom: 4px; font-weight: 600; }
 @media (max-width: 520px) { .btn.install { font-size: .85rem; padding: 4px 10px; } .header-right { gap: 6px; } }
+=======
+>>>>>>> a956f35e743c2473c5fe0933d3d29c967fb3fc05
